@@ -1,2 +1,2 @@
-# MeshPCB
-Custom PCB for Wireless Mesh Network Communication Device
+# Arigato, Crypto Roboto
+Custom eInk PCB for Crypto Robot with Decentraland Integration
