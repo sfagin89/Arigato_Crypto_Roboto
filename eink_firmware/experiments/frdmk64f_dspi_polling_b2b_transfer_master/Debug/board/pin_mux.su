@@ -1,0 +1,4 @@
+C:\Users\santi09\Documents\MCUXpressoIDE_11.5.0_7232\Arigato_Crypto_Roboto\eink_firmware\experiments\frdmk64f_dspi_polling_b2b_transfer_master\drivers/fsl_clock.h:668:20:CLOCK_EnableClock	24	static
+C:\Users\santi09\Documents\MCUXpressoIDE_11.5.0_7232\Arigato_Crypto_Roboto\eink_firmware\experiments\frdmk64f_dspi_polling_b2b_transfer_master\drivers/fsl_port.h:374:20:PORT_SetPinMux	24	static
+../board/pin_mux.c:38:6:BOARD_InitBootPins	8	static
+../board/pin_mux.c:65:6:BOARD_InitPins	32	static
