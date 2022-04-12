@@ -31,17 +31,17 @@
  * therefore the code for MQTT connections are placed in another file (shadow_demo_helpers.c)
  * to make it easy to read the code using Device Shadow library.
  *
- * This example assumes there is a powerOn state in the device shadow. It does the
+ * This example assumes there is a fuelValue state in the device shadow. It does the
  * following operations:
  * 1. Establish a MQTT connection by using the helper functions in shadow_demo_helpers.c.
  * 2. Assemble strings for the MQTT topics of device shadow, by using macros defined by the Device Shadow library.
  * 3. Subscribe to those MQTT topics by using helper functions in shadow_demo_helpers.c.
- * 4. Publish a desired state of powerOn by using helper functions in shadow_demo_helpers.c.  That will cause
+ * 4. Publish a desired state of fuelValue by using helper functions in shadow_demo_helpers.c.  That will cause
  * a delta message to be sent to device.
  * 5. Handle incoming MQTT messages in eventCallback, determine whether the message is related to the device
  * shadow by using a function defined by the Device Shadow library (Shadow_MatchTopicString). If the message is a
  * device shadow delta message, set a flag for the main function to know, then the main function will publish
- * a second message to update the reported state of powerOn.
+ * a second message to update the reported state of fuelValue.
  * 6. Handle incoming message again in eventCallback. If the message is from update/accepted, verify that it
  * has the same clientToken as previously published in the update message. That will mark the end of the demo.
  */
@@ -69,6 +69,8 @@
 /* shadow demo helpers header. */
 #include "shadow_demo_helpers.h"
 
+#include <Python.h>
+
 /**
  * @brief The length of #THING_NAME.
  */
@@ -81,7 +83,7 @@
  * {
  *   "state": {
  *     "desired": {
- *       "powerOn": 1
+ *       "fuelValue": 1
  *     }
  *   },
  *   "clientToken": "021909"
@@ -95,7 +97,7 @@
     "{"                         \
     "\"state\":{"               \
     "\"desired\":{"             \
-    "\"powerOn\":%01d"          \
+    "\"fuelValue\":%01d"          \
     "}"                         \
     "},"                        \
     "\"clientToken\":\"%06lu\"" \
@@ -109,7 +111,7 @@
  * the length need to minus 3:
  * 1. The length of "%01d" is 4.
  * 2. The length of %06lu is 5.
- * 3. The actual length we will use in case 1. is 1 ( for the state of powerOn ).
+ * 3. The actual length we will use in case 1. is 1 ( for the state of fuelValue ).
  * 4. The actual length we will use in case 2. is 6 ( for the clientToken length ).
  * 5. Thus the additional size 3 = 4 + 5 - 1 - 6 + 1 (termination character).
  *
@@ -124,7 +126,7 @@
  * {
  *   "state": {
  *     "reported": {
- *       "powerOn": 1
+ *       "fuelValue": 1
  *     }
  *   },
  *   "clientToken": "021909"
@@ -138,7 +140,7 @@
     "{"                         \
     "\"state\":{"               \
     "\"reported\":{"            \
-    "\"powerOn\":%01d"          \
+    "\"fuelValue\":%01d"          \
     "}"                         \
     "},"                        \
     "\"clientToken\":\"%06lu\"" \
@@ -185,7 +187,7 @@
 /**
  * @brief The simulated device current power on state.
  */
-static uint32_t currentPowerOnState = 0;
+static uint32_t currentFuelValueState = 0;
 
 /**
  * @brief The flag to indicate the device current power on state changed.
@@ -242,7 +244,7 @@ static void eventCallback( MQTTContext_t * pMqttContext,
 /**
  * @brief Process payload from /update/delta topic.
  *
- * This handler examines the version number and the powerOn state. If powerOn
+ * This handler examines the version number and the fuelValue state. If fuelValue
  * state has changed, it sets a flag for the main function to take further actions.
  *
  * @param[in] pPublishInfo Deserialized publish info pointer for the incoming
@@ -360,10 +362,10 @@ static void updateDeltaHandler( MQTTPublishInfo_t * pPublishInfo )
      *      "version": 12,
      *      "timestamp": 1595437367,
      *      "state": {
-     *          "powerOn": 1
+     *          "fuelValue": 1
      *      },
      *      "metadata": {
-     *          "powerOn": {
+     *          "fuelValue": {
      *          "timestamp": 1595437367
      *          }
      *      },
@@ -408,18 +410,18 @@ static void updateDeltaHandler( MQTTPublishInfo_t * pPublishInfo )
 
     LogInfo( ( "version:%d, currentVersion:%d \r\n", version, currentVersion ) );
 
-    /* When the version is much newer than the on we retained, that means the powerOn
+    /* When the version is much newer than the on we retained, that means the fuelValue
      * state is valid for us. */
     if( version > currentVersion )
     {
         /* Set to received version as the current version. */
         currentVersion = version;
 
-        /* Get powerOn state from json documents. */
+        /* Get fuelValue state from json documents. */
         result = JSON_Search( ( char * ) pPublishInfo->pPayload,
                               pPublishInfo->payloadLength,
-                              "state.powerOn",
-                              sizeof( "state.powerOn" ) - 1,
+                              "state.fuelValue",
+                              sizeof( "state.fuelValue" ) - 1,
                               &outValue,
                               ( size_t * ) &outValueLength );
     }
@@ -435,17 +437,17 @@ static void updateDeltaHandler( MQTTPublishInfo_t * pPublishInfo )
 
     if( result == JSONSuccess )
     {
-        /* Convert the powerOn state value to an unsigned integer value. */
+        /* Convert the fuelValue state value to an unsigned integer value. */
         newState = ( uint32_t ) strtoul( outValue, NULL, 10 );
 
-        LogInfo( ( "The new power on state newState:%d, currentPowerOnState:%d \r\n",
-                   newState, currentPowerOnState ) );
+        LogInfo( ( "The new fuel state newState:%d, currentFuelValueState:%d \r\n",
+                   newState, currentFuelValueState ) );
 
-        if( newState != currentPowerOnState )
+        if( newState != currentFuelValueState )
         {
-            /* The received powerOn state is different from the one we retained before, so we switch them
+            /* The received fuelValue state is different from the one we retained before, so we switch them
              * and set the flag. */
-            currentPowerOnState = newState;
+            currentFuelValueState = newState;
 
             /* State change will be handled in main(), where we will publish a "reported"
              * state to the device shadow. We do not do it here because we are inside of
@@ -456,7 +458,7 @@ static void updateDeltaHandler( MQTTPublishInfo_t * pPublishInfo )
     }
     else
     {
-        LogError( ( "No powerOn in json document!!" ) );
+        LogError( ( "No fuelValue in json document!!" ) );
         eventCallbackError = true;
     }
 }
@@ -482,12 +484,12 @@ static void updateAcceptedHandler( MQTTPublishInfo_t * pPublishInfo )
      *  {
      *      "state": {
      *          "reported": {
-     *          "powerOn": 1
+     *          "fuelValue": 1
      *          }
      *      },
      *      "metadata": {
      *          "reported": {
-     *          "powerOn": {
+     *          "fuelValue": {
      *              "timestamp": 1596573647
      *          }
      *          }
@@ -673,8 +675,16 @@ int main( int argc,
      * it from being placed on the call stack. */
     static char updateDocument[ SHADOW_REPORTED_JSON_LENGTH + 1 ] = { 0 };
 
-    ( void ) argc;
-    ( void ) argv;
+    // experiment to test passing values into function to set the power on state.
+    //( void ) argc;
+    //( void ) argv;
+
+    if (argc > 1)
+    {
+        uint32_t test = strtoul(argv[1], NULL, 10 );
+        LogInfo( ( "******************INPUT VALUE: %u*************", test ));
+        }
+    
 
     do
     {
@@ -840,8 +850,8 @@ int main( int argc,
                  */
                 if( stateChanged == true )
                 {
-                    /* Report the latest power state back to device shadow. */
-                    LogInfo( ( "Report to the state change: %d", currentPowerOnState ) );
+                    /* Report the latest fuel state back to device shadow. */
+                    LogInfo( ( "Report to the state change: %d", currentFuelValueState ) );
                     ( void ) memset( updateDocument,
                                      0x00,
                                      sizeof( updateDocument ) );
@@ -853,7 +863,7 @@ int main( int argc,
                     snprintf( updateDocument,
                               SHADOW_REPORTED_JSON_LENGTH + 1,
                               SHADOW_REPORTED_JSON,
-                              ( int ) currentPowerOnState,
+                              ( int ) currentFuelValueState,
                               ( long unsigned ) clientToken );
 
                     returnStatus = PublishToTopic( SHADOW_TOPIC_STR_UPDATE( THING_NAME, SHADOW_NAME ),
@@ -925,7 +935,7 @@ int main( int argc,
         LogInfo( ( "Demo completed successfully." ) );
     }
 
-    return currentPowerOnState;
+    return returnStatus;
 }
 
 /*-----------------------------------------------------------*/
