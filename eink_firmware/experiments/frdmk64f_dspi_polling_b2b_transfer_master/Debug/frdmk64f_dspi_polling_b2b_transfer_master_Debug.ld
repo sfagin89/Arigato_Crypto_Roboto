@@ -6,7 +6,7 @@
  * Generated linker script file for MK64FN1M0xxx12
  * Created from linkscript.ldt by FMCreateLinkLibraries
  * Using Freemarker v2.3.30
- * MCUXpresso IDE v11.5.0 [Build 7232] [2022-01-11] on Apr 9, 2022, 4:34:54 PM
+ * MCUXpresso IDE v11.5.0 [Build 7232] [2022-01-11] on Apr 15, 2022, 11:44:26 PM
  */
 
 INCLUDE "frdmk64f_dspi_polling_b2b_transfer_master_Debug_library.ld"
