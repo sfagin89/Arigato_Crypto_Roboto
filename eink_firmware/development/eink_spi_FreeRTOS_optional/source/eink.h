@@ -47,6 +47,7 @@ typedef unsigned short uint16_t;
 #define EINK_2IN9_V2_HEIGHT 296
 
 #define TEST_IMAGE_SIZE     2048
+#define  GITHUB_IMAGE_SIZE   2048
 
 
 /*! @brief High/Low definition */
@@ -130,7 +131,8 @@ typedef enum _gpio_pin_hi_low
 volatile extern uint32_t g_systickCounter_eink; // needed for creating system delay
 volatile extern uint8_t _WF_PARTIAL_2IN9[159]; // provided by Waveshare sample code
 volatile extern uint8_t WS_20_30[159]; // provided by Waveshare sample code
-volatile extern UBYTE gImage_test_qrcode[TEST_IMAGE_SIZE]; // sample image to testing
+const extern UBYTE gImage_test_qrcode[TEST_IMAGE_SIZE]; // sample image to testing
+const extern UBYTE gImage_github_qrcode[GITHUB_IMAGE_SIZE]; // qrcode to our github
 
 /*******************************************************************************
  * Prototypes

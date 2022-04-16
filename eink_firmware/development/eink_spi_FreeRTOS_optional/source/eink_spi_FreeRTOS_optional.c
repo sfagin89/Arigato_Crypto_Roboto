@@ -42,19 +42,20 @@
 /* TODO: insert other include files here. */
 #include "fsl_dspi.h"
 #include "eink.h"
+#include "fsl_component_button.h"
 /* TODO: insert other definitions and declarations here. */
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
-
-
-
+#define BUTTON_PRESSED_MASK 0x1
+#define ON                  1U
+#define OFF					0U
 
 /*******************************************************************************
  * Variables
  ******************************************************************************/
 
-
+volatile uint8_t display_state = ON;
 
 
 /*******************************************************************************
@@ -80,14 +81,21 @@ int main(void) {
     EINK_InitSequenceSPI();
     EINK_test();
 
+
     /* Force the counter to be placed into memory. */
     volatile static int i = 0 ;
     /* Enter an infinite loop, just incrementing a counter. */
     while(1) {
-        i++ ;
-        /* 'Dummy' NOP to allow source level single stepping of
-            tight while() loop */
-        __asm volatile ("nop");
+//        i++ ;
+//        /* 'Dummy' NOP to allow source level single stepping of
+//            tight while() loop */
+//        __asm volatile ("nop");
+
+    	if (display_state == OFF){
+    		EINK_Clear();
+    	}
+
+
     }
     return 0 ;
 }
