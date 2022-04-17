@@ -31,17 +31,17 @@
  * therefore the code for MQTT connections are placed in another file (shadow_demo_helpers.c)
  * to make it easy to read the code using Device Shadow library.
  *
- * This example assumes there is a fuelValue state in the device shadow. It does the
+ * This example assumes there is a powerOn state in the device shadow. It does the
  * following operations:
  * 1. Establish a MQTT connection by using the helper functions in shadow_demo_helpers.c.
  * 2. Assemble strings for the MQTT topics of device shadow, by using macros defined by the Device Shadow library.
  * 3. Subscribe to those MQTT topics by using helper functions in shadow_demo_helpers.c.
- * 4. Publish a desired state of fuelValue by using helper functions in shadow_demo_helpers.c.  That will cause
+ * 4. Publish a desired state of powerOn by using helper functions in shadow_demo_helpers.c.  That will cause
  * a delta message to be sent to device.
  * 5. Handle incoming MQTT messages in eventCallback, determine whether the message is related to the device
  * shadow by using a function defined by the Device Shadow library (Shadow_MatchTopicString). If the message is a
  * device shadow delta message, set a flag for the main function to know, then the main function will publish
- * a second message to update the reported state of fuelValue.
+ * a second message to update the reported state of powerOn.
  * 6. Handle incoming message again in eventCallback. If the message is from update/accepted, verify that it
  * has the same clientToken as previously published in the update message. That will mark the end of the demo.
  */
@@ -69,8 +69,6 @@
 /* shadow demo helpers header. */
 #include "shadow_demo_helpers.h"
 
-#include <Python.h>
-
 /**
  * @brief The length of #THING_NAME.
  */
@@ -83,7 +81,7 @@
  * {
  *   "state": {
  *     "desired": {
- *       "fuelValue": 1
+ *       "powerOn": 1
  *     }
  *   },
  *   "clientToken": "021909"
@@ -97,7 +95,7 @@
     "{"                         \
     "\"state\":{"               \
     "\"desired\":{"             \
-    "\"fuelValue\":%01d"          \
+    "\"powerOn\":%01d"          \
     "}"                         \
     "},"                        \
     "\"clientToken\":\"%06lu\"" \
@@ -111,7 +109,7 @@
  * the length need to minus 3:
  * 1. The length of "%01d" is 4.
  * 2. The length of %06lu is 5.
- * 3. The actual length we will use in case 1. is 1 ( for the state of fuelValue ).
+ * 3. The actual length we will use in case 1. is 1 ( for the state of powerOn ).
  * 4. The actual length we will use in case 2. is 6 ( for the clientToken length ).
  * 5. Thus the additional size 3 = 4 + 5 - 1 - 6 + 1 (termination character).
  *
@@ -126,7 +124,7 @@
  * {
  *   "state": {
  *     "reported": {
- *       "fuelValue": 1
+ *       "powerOn": 1
  *     }
  *   },
  *   "clientToken": "021909"
@@ -140,7 +138,7 @@
     "{"                         \
     "\"state\":{"               \
     "\"reported\":{"            \
-    "\"fuelValue\":%01d"          \
+    "\"powerOn\":%01d"          \
     "}"                         \
     "},"                        \
     "\"clientToken\":\"%06lu\"" \
@@ -185,9 +183,9 @@
 /*-----------------------------------------------------------*/
 
 /**
- * @brief The simulated device current fuel state.
+ * @brief The simulated device current power on state.
  */
-static uint32_t currentFuelValueState = 0;
+static uint32_t currentPowerOnState = 0;
 
 /**
  * @brief The flag to indicate the device current power on state changed.
@@ -244,7 +242,7 @@ static void eventCallback( MQTTContext_t * pMqttContext,
 /**
  * @brief Process payload from /update/delta topic.
  *
- * This handler examines the version number and the fuelValue state. If fuelValue
+ * This handler examines the version number and the powerOn state. If powerOn
  * state has changed, it sets a flag for the main function to take further actions.
  *
  * @param[in] pPublishInfo Deserialized publish info pointer for the incoming
@@ -362,10 +360,10 @@ static void updateDeltaHandler( MQTTPublishInfo_t * pPublishInfo )
      *      "version": 12,
      *      "timestamp": 1595437367,
      *      "state": {
-     *          "fuelValue": 1
+     *          "powerOn": 1
      *      },
      *      "metadata": {
-     *          "fuelValue": {
+     *          "powerOn": {
      *          "timestamp": 1595437367
      *          }
      *      },
@@ -410,18 +408,18 @@ static void updateDeltaHandler( MQTTPublishInfo_t * pPublishInfo )
 
     LogInfo( ( "version:%d, currentVersion:%d \r\n", version, currentVersion ) );
 
-    /* When the version is much newer than the on we retained, that means the fuelValue
+    /* When the version is much newer than the on we retained, that means the powerOn
      * state is valid for us. */
     if( version > currentVersion )
     {
         /* Set to received version as the current version. */
         currentVersion = version;
 
-        /* Get fuelValue state from json documents. */
+        /* Get powerOn state from json documents. */
         result = JSON_Search( ( char * ) pPublishInfo->pPayload,
                               pPublishInfo->payloadLength,
-                              "state.fuelValue",
-                              sizeof( "state.fuelValue" ) - 1,
+                              "state.powerOn",
+                              sizeof( "state.powerOn" ) - 1,
                               &outValue,
                               ( size_t * ) &outValueLength );
     }
@@ -437,17 +435,17 @@ static void updateDeltaHandler( MQTTPublishInfo_t * pPublishInfo )
 
     if( result == JSONSuccess )
     {
-        /* Convert the fuelValue state value to an unsigned integer value. */
+        /* Convert the powerOn state value to an unsigned integer value. */
         newState = ( uint32_t ) strtoul( outValue, NULL, 10 );
 
-        LogInfo( ( "The new fuel state newState:%d, currentFuelValueState:%d \r\n",
-                   newState, currentFuelValueState ) );
+        LogInfo( ( "The new power on state newState:%d, currentPowerOnState:%d \r\n",
+                   newState, currentPowerOnState ) );
 
-        if( newState != currentFuelValueState )
+        if( newState != currentPowerOnState )
         {
-            /* The received fuelValue state is different from the one we retained before, so we switch them
+            /* The received powerOn state is different from the one we retained before, so we switch them
              * and set the flag. */
-            currentFuelValueState = newState;
+            currentPowerOnState = newState;
 
             /* State change will be handled in main(), where we will publish a "reported"
              * state to the device shadow. We do not do it here because we are inside of
@@ -458,7 +456,7 @@ static void updateDeltaHandler( MQTTPublishInfo_t * pPublishInfo )
     }
     else
     {
-        LogError( ( "No fuelValue in json document!!" ) );
+        LogError( ( "No powerOn in json document!!" ) );
         eventCallbackError = true;
     }
 }
@@ -484,12 +482,12 @@ static void updateAcceptedHandler( MQTTPublishInfo_t * pPublishInfo )
      *  {
      *      "state": {
      *          "reported": {
-     *          "fuelValue": 1
+     *          "powerOn": 1
      *          }
      *      },
      *      "metadata": {
      *          "reported": {
-     *          "fuelValue": {
+     *          "powerOn": {
      *              "timestamp": 1596573647
      *          }
      *          }
@@ -675,151 +673,259 @@ int main( int argc,
      * it from being placed on the call stack. */
     static char updateDocument[ SHADOW_REPORTED_JSON_LENGTH + 1 ] = { 0 };
 
-    LogInfo(("****************************** Initialize******************************************"));
-    returnStatus = EstablishMqttSession( eventCallback );
+    ( void ) argc;
+    ( void ) argv;
 
-    if( returnStatus == EXIT_FAILURE )
+    do
     {
-        /* Log error to indicate connection failure. */
-        LogError( ( "Failed to connect to MQTT broker." ) );
-    }
-    else
-    {
-        /* Subscribe to update delta topics*/
-        if( returnStatus == EXIT_SUCCESS )
+        returnStatus = EstablishMqttSession( eventCallback );
+
+        if( returnStatus == EXIT_FAILURE )
         {
-            returnStatus = SubscribeToTopic( SHADOW_TOPIC_STR_UPDATE_DELTA( THING_NAME, SHADOW_NAME ),
-                                             SHADOW_TOPIC_LEN_UPDATE_DELTA( THING_NAME_LENGTH, SHADOW_NAME_LENGTH ) );
+            /* Log error to indicate connection failure. */
+            LogError( ( "Failed to connect to MQTT broker." ) );
         }
-
-        if( returnStatus == EXIT_SUCCESS )
+        else
         {
-            returnStatus = SubscribeToTopic( SHADOW_TOPIC_STR_UPDATE_ACC( THING_NAME, SHADOW_NAME ),
-                                             SHADOW_TOPIC_LEN_UPDATE_ACC( THING_NAME_LENGTH, SHADOW_NAME_LENGTH ) );
-        }
+            /* Reset the shadow delete status flags. */
+            deleteResponseReceived = false;
+            shadowDeleted = false;
 
-        if( returnStatus == EXIT_SUCCESS )
-        {
-            returnStatus = SubscribeToTopic( SHADOW_TOPIC_STR_UPDATE_REJ( THING_NAME, SHADOW_NAME ),
-                                             SHADOW_TOPIC_LEN_UPDATE_REJ( THING_NAME_LENGTH, SHADOW_NAME_LENGTH ) );
-        }
+            /* First of all, try to delete any Shadow document in the cloud.
+             * Try to subscribe to `/delete/accepted` and `/delete/rejected` topics. */
+            returnStatus = SubscribeToTopic( SHADOW_TOPIC_STR_DELETE_ACC( THING_NAME, SHADOW_NAME ),
+                                             SHADOW_TOPIC_LEN_DELETE_ACC( THING_NAME_LENGTH, SHADOW_NAME_LENGTH ) );
 
-        /* This demo uses a constant #THING_NAME and #SHADOW_NAME known at compile time therefore
-         * we can use macros to assemble shadow topic strings.
-         * If the thing name or shadow name is only known at run time, then we could use the API
-         * #Shadow_AssembleTopicString to assemble shadow topic strings, here is the example for /update/delta:
-         *
-         * For /update/delta:
-         *
-         * #define SHADOW_TOPIC_MAX_LENGTH  (256U)
-         *
-         * ShadowStatus_t shadowStatus = SHADOW_SUCCESS;
-         * char topicBuffer[ SHADOW_TOPIC_MAX_LENGTH ] = { 0 };
-         * uint16_t bufferSize = SHADOW_TOPIC_MAX_LENGTH;
-         * uint16_t outLength = 0;
-         * const char thingName[] = { "TestThingName" };
-         * uint16_t thingNameLength  = ( sizeof( thingName ) - 1U );
-         * const char shadowName[] = { "TestShadowName" };
-         * uint16_t shadowNameLength  = ( sizeof( shadowName ) - 1U );
-         *
-         * shadowStatus = Shadow_AssembleTopicString( ShadowTopicStringTypeUpdateDelta,
-         *                                            thingName,
-         *                                            thingNameLength,
-         *                                            shadowName,
-         *                                            shadowNameLength,
-         *                                            & ( topicBuffer[ 0 ] ),
-         *                                            bufferSize,
-         *                                            & outLength );
-         */
+            if( returnStatus == EXIT_SUCCESS )
+            {
+                /* Try to subscribe to `/delete/rejected` topic. */
+                returnStatus = SubscribeToTopic( SHADOW_TOPIC_STR_DELETE_REJ( THING_NAME, SHADOW_NAME ),
+                                                 SHADOW_TOPIC_LEN_DELETE_REJ( THING_NAME_LENGTH, SHADOW_NAME_LENGTH ) );
+            }
 
-        /* Then we publish a desired state to the /update topic. Since we've deleted
-         * the device shadow at the beginning of the demo, this will cause a delta message
-         * to be published, which we have subscribed to.
-         * In many real applications, the desired state is not published by
-         * the device itself. But for the purpose of making this demo self-contained,
-         * we publish one here so that we can receive a delta message later.
-         */
+            if( returnStatus == EXIT_SUCCESS )
+            {
+                /* Publish to Shadow `delete` topic to attempt to delete the
+                 * Shadow document if exists. */
+                returnStatus = PublishToTopic( SHADOW_TOPIC_STR_DELETE( THING_NAME, SHADOW_NAME ),
+                                               SHADOW_TOPIC_LEN_DELETE( THING_NAME_LENGTH, SHADOW_NAME_LENGTH ),
+                                               updateDocument,
+                                               0U );
+            }
 
-        /*if( returnStatus == EXIT_SUCCESS )
-        {
-            LogInfo( ( "Start to unsubscribe shadow topics and disconnect from MQTT. \r\n" ) );
-            returnStatus = UnsubscribeFromTopic( SHADOW_TOPIC_STR_UPDATE_DELTA( THING_NAME, SHADOW_NAME ),
+            /* Unsubscribe from the `/delete/accepted` and 'delete/rejected` topics.*/
+            if( returnStatus == EXIT_SUCCESS )
+            {
+                returnStatus = UnsubscribeFromTopic( SHADOW_TOPIC_STR_DELETE_ACC( THING_NAME, SHADOW_NAME ),
+                                                     SHADOW_TOPIC_LEN_DELETE_ACC( THING_NAME_LENGTH, SHADOW_NAME_LENGTH ) );
+            }
+
+            if( returnStatus == EXIT_SUCCESS )
+            {
+                returnStatus = UnsubscribeFromTopic( SHADOW_TOPIC_STR_DELETE_REJ( THING_NAME, SHADOW_NAME ),
+                                                     SHADOW_TOPIC_LEN_DELETE_REJ( THING_NAME_LENGTH, SHADOW_NAME_LENGTH ) );
+            }
+
+            /* Check if an incoming publish on `/delete/accepted` or `/delete/rejected`
+             * topics. If a response is not received, mark the demo execution as a failure.*/
+            if( ( returnStatus == EXIT_SUCCESS ) && ( deleteResponseReceived != true ) )
+            {
+                LogError( ( "Failed to receive a response for Shadow delete." ) );
+                returnStatus = EXIT_FAILURE;
+            }
+
+            /* Check if Shadow document delete was successful. A delete can be
+             * successful in cases listed below.
+             *  1. If an incoming publish is received on `/delete/accepted` topic.
+             *  2. If an incoming publish is received on `/delete/rejected` topic
+             *     with an error code 404. This indicates that a delete was
+             *     attempted when a Shadow document is not available for the
+             *     Thing. */
+            if( returnStatus == EXIT_SUCCESS )
+            {
+                if( shadowDeleted == false )
+                {
+                    LogError( ( "Shadow delete operation failed." ) );
+                    returnStatus = EXIT_FAILURE;
+                }
+            }
+
+            /* Successfully connect to MQTT broker, the next step is
+             * to subscribe shadow topics. */
+            if( returnStatus == EXIT_SUCCESS )
+            {
+                returnStatus = SubscribeToTopic( SHADOW_TOPIC_STR_UPDATE_DELTA( THING_NAME, SHADOW_NAME ),
                                                  SHADOW_TOPIC_LEN_UPDATE_DELTA( THING_NAME_LENGTH, SHADOW_NAME_LENGTH ) );
-        }
+            }
 
-        if( returnStatus == EXIT_SUCCESS )
-        {
-            returnStatus = UnsubscribeFromTopic( SHADOW_TOPIC_STR_UPDATE_ACC( THING_NAME, SHADOW_NAME ),
+            if( returnStatus == EXIT_SUCCESS )
+            {
+                returnStatus = SubscribeToTopic( SHADOW_TOPIC_STR_UPDATE_ACC( THING_NAME, SHADOW_NAME ),
                                                  SHADOW_TOPIC_LEN_UPDATE_ACC( THING_NAME_LENGTH, SHADOW_NAME_LENGTH ) );
+            }
+
+            if( returnStatus == EXIT_SUCCESS )
+            {
+                returnStatus = SubscribeToTopic( SHADOW_TOPIC_STR_UPDATE_REJ( THING_NAME, SHADOW_NAME ),
+                                                 SHADOW_TOPIC_LEN_UPDATE_REJ( THING_NAME_LENGTH, SHADOW_NAME_LENGTH ) );
+            }
+
+            /* This demo uses a constant #THING_NAME and #SHADOW_NAME known at compile time therefore
+             * we can use macros to assemble shadow topic strings.
+             * If the thing name or shadow name is only known at run time, then we could use the API
+             * #Shadow_AssembleTopicString to assemble shadow topic strings, here is the example for /update/delta:
+             *
+             * For /update/delta:
+             *
+             * #define SHADOW_TOPIC_MAX_LENGTH  (256U)
+             *
+             * ShadowStatus_t shadowStatus = SHADOW_SUCCESS;
+             * char topicBuffer[ SHADOW_TOPIC_MAX_LENGTH ] = { 0 };
+             * uint16_t bufferSize = SHADOW_TOPIC_MAX_LENGTH;
+             * uint16_t outLength = 0;
+             * const char thingName[] = { "TestThingName" };
+             * uint16_t thingNameLength  = ( sizeof( thingName ) - 1U );
+             * const char shadowName[] = { "TestShadowName" };
+             * uint16_t shadowNameLength  = ( sizeof( shadowName ) - 1U );
+             *
+             * shadowStatus = Shadow_AssembleTopicString( ShadowTopicStringTypeUpdateDelta,
+             *                                            thingName,
+             *                                            thingNameLength,
+             *                                            shadowName,
+             *                                            shadowNameLength,
+             *                                            & ( topicBuffer[ 0 ] ),
+             *                                            bufferSize,
+             *                                            & outLength );
+             */
+
+            /* Then we publish a desired state to the /update topic. Since we've deleted
+             * the device shadow at the beginning of the demo, this will cause a delta message
+             * to be published, which we have subscribed to.
+             * In many real applications, the desired state is not published by
+             * the device itself. But for the purpose of making this demo self-contained,
+             * we publish one here so that we can receive a delta message later.
+             */
+            if( returnStatus == EXIT_SUCCESS )
+            {
+                /* desired power on state . */
+                LogInfo( ( "Send desired power state with 1." ) );
+
+                ( void ) memset( updateDocument,
+                                 0x00,
+                                 sizeof( updateDocument ) );
+
+                /* Keep the client token in global variable used to compare if
+                 * the same token in /update/accepted. */
+                clientToken = ( Clock_GetTimeMs() % 1000000 );
+
+                snprintf( updateDocument,
+                          SHADOW_DESIRED_JSON_LENGTH + 1,
+                          SHADOW_DESIRED_JSON,
+                          ( int ) 1,
+                          ( long unsigned ) clientToken );
+
+                returnStatus = PublishToTopic( SHADOW_TOPIC_STR_UPDATE( THING_NAME, SHADOW_NAME ),
+                                               SHADOW_TOPIC_LEN_UPDATE( THING_NAME_LENGTH, SHADOW_NAME_LENGTH ),
+                                               updateDocument,
+                                               ( SHADOW_DESIRED_JSON_LENGTH + 1 ) );
+            }
+
+            if( returnStatus == EXIT_SUCCESS )
+            {
+                /* Note that PublishToTopic already called MQTT_ProcessLoop,
+                 * therefore responses may have been received and the eventCallback
+                 * may have been called, which may have changed the stateChanged flag.
+                 * Check if the state change flag has been modified or not. If it's modified,
+                 * then we publish reported state to update topic.
+                 */
+                if( stateChanged == true )
+                {
+                    /* Report the latest power state back to device shadow. */
+                    LogInfo( ( "Report to the state change: %d", currentPowerOnState ) );
+                    ( void ) memset( updateDocument,
+                                     0x00,
+                                     sizeof( updateDocument ) );
+
+                    /* Keep the client token in global variable used to compare if
+                     * the same token in /update/accepted. */
+                    clientToken = ( Clock_GetTimeMs() % 1000000 );
+
+                    snprintf( updateDocument,
+                              SHADOW_REPORTED_JSON_LENGTH + 1,
+                              SHADOW_REPORTED_JSON,
+                              ( int ) currentPowerOnState,
+                              ( long unsigned ) clientToken );
+
+                    returnStatus = PublishToTopic( SHADOW_TOPIC_STR_UPDATE( THING_NAME, SHADOW_NAME ),
+                                                   SHADOW_TOPIC_LEN_UPDATE( THING_NAME_LENGTH, SHADOW_NAME_LENGTH ),
+                                                   updateDocument,
+                                                   ( SHADOW_REPORTED_JSON_LENGTH + 1 ) );
+                }
+                else
+                {
+                    LogInfo( ( "No change from /update/delta, unsubscribe all shadow topics and disconnect from MQTT.\r\n" ) );
+                }
+            }
+
+            if( returnStatus == EXIT_SUCCESS )
+            {
+                LogInfo( ( "Start to unsubscribe shadow topics and disconnect from MQTT. \r\n" ) );
+                returnStatus = UnsubscribeFromTopic( SHADOW_TOPIC_STR_UPDATE_DELTA( THING_NAME, SHADOW_NAME ),
+                                                     SHADOW_TOPIC_LEN_UPDATE_DELTA( THING_NAME_LENGTH, SHADOW_NAME_LENGTH ) );
+            }
+
+            if( returnStatus == EXIT_SUCCESS )
+            {
+                returnStatus = UnsubscribeFromTopic( SHADOW_TOPIC_STR_UPDATE_ACC( THING_NAME, SHADOW_NAME ),
+                                                     SHADOW_TOPIC_LEN_UPDATE_ACC( THING_NAME_LENGTH, SHADOW_NAME_LENGTH ) );
+            }
+
+            if( returnStatus == EXIT_SUCCESS )
+            {
+                returnStatus = UnsubscribeFromTopic( SHADOW_TOPIC_STR_UPDATE_REJ( THING_NAME, SHADOW_NAME ),
+                                                     SHADOW_TOPIC_LEN_UPDATE_REJ( THING_NAME_LENGTH, SHADOW_NAME_LENGTH ) );
+            }
+
+            /* The MQTT session is always disconnected, even there were prior failures. */
+            returnStatus = DisconnectMqttSession();
         }
+
+        /* This demo performs only Device Shadow operations. If matching the Shadow
+         * topic fails or there are failures in parsing the received JSON document,
+         * then this demo was not successful. */
+        if( eventCallbackError == true )
+        {
+            returnStatus = EXIT_FAILURE;
+        }
+
+        /* Increment the demo run count. */
+        demoRunCount++;
 
         if( returnStatus == EXIT_SUCCESS )
         {
-            returnStatus = UnsubscribeFromTopic( SHADOW_TOPIC_STR_UPDATE_REJ( THING_NAME, SHADOW_NAME ),
-                                                 SHADOW_TOPIC_LEN_UPDATE_REJ( THING_NAME_LENGTH, SHADOW_NAME_LENGTH ) );
-        }*/
-
-        /* The MQTT session is always disconnected, even there were prior failures. */
-        //returnStatus = DisconnectMqttSession();
+            LogInfo( ( "Demo iteration %d is successful.", demoRunCount ) );
         }
-
-    /* This demo performs only Device Shadow operations. If matching the Shadow
-     * topic fails or there are failures in parsing the received JSON document,
-     * then this demo was not successful. */
-    if( eventCallbackError == true )
-    {
-        returnStatus = EXIT_FAILURE;
-    }
-
-    /* Increment the demo run count. */
-    demoRunCount++;
+        /* Attempt to retry a failed iteration of demo for up to #SHADOW_MAX_DEMO_LOOP_COUNT times. */
+        else if( demoRunCount < SHADOW_MAX_DEMO_LOOP_COUNT )
+        {
+            LogWarn( ( "Demo iteration %d failed. Retrying...", demoRunCount ) );
+            sleep( DELAY_BETWEEN_DEMO_RETRY_ITERATIONS_S );
+        }
+        /* Failed all #SHADOW_MAX_DEMO_LOOP_COUNT demo iterations. */
+        else
+        {
+            LogError( ( "All %d demo iterations failed.", SHADOW_MAX_DEMO_LOOP_COUNT ) );
+            break;
+        }
+    } while( returnStatus != EXIT_SUCCESS );
 
     if( returnStatus == EXIT_SUCCESS )
     {
-        LogInfo( ( "Demo iteration %d is successful.", demoRunCount ) );
+        /* Log message indicating the demo completed successfully. */
+        LogInfo( ( "Demo completed successfully." ) );
     }
-    /* Attempt to retry a failed iteration of demo for up to #SHADOW_MAX_DEMO_LOOP_COUNT times. */
-    else if( demoRunCount < SHADOW_MAX_DEMO_LOOP_COUNT )
-    {
-        LogWarn( ( "Demo iteration %d failed. Retrying...", demoRunCount ) );
-        sleep( DELAY_BETWEEN_DEMO_RETRY_ITERATIONS_S );
-    }
-    /* Failed all #SHADOW_MAX_DEMO_LOOP_COUNT demo iterations. */
-    else
-    {
-        LogError( ( "All %d demo iterations failed.", SHADOW_MAX_DEMO_LOOP_COUNT ) );
-    }
- 
-while( 1 )
-{
-if( stateChanged == true )
-        {
-            /* Report the latest fuel state back to device shadow. */
-            LogInfo( ( "Changing the fuel value state from: %d to %d", currentFuelValueState, 0 ) );
-            ( void ) memset( updateDocument,
-                             0x00,
-                             sizeof( updateDocument ) );
 
-            /* Keep the client token in global variable used to compare if
-             * the same token in /update/accepted. */
-            clientToken = ( Clock_GetTimeMs() % 1000000 );
-
-            snprintf( updateDocument,
-                      SHADOW_REPORTED_JSON_LENGTH + 1,
-                      SHADOW_REPORTED_JSON,
-                      ( int ) 0,
-                      ( long unsigned ) clientToken );
-
-            returnStatus = PublishToTopic( SHADOW_TOPIC_STR_UPDATE( THING_NAME, SHADOW_NAME ),
-                                           SHADOW_TOPIC_LEN_UPDATE( THING_NAME_LENGTH, SHADOW_NAME_LENGTH ),
-                                           updateDocument,
-                                           ( SHADOW_REPORTED_JSON_LENGTH + 1 ) );
-        }
-        stateChanged = false;
+    return currentPowerOnState;
 }
-
-    return returnStatus;
-}
-
 
 /*-----------------------------------------------------------*/

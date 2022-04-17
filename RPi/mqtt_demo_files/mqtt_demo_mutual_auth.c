@@ -55,6 +55,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <stdio.h>
 
 /* POSIX includes. */
 #include <unistd.h>
@@ -74,6 +75,12 @@
 
 /* Clock for timer. */
 #include "clock.h"
+
+/* For handling JSON input */
+#include "core_json.h"
+
+/* For embedding Python script */
+#include <Python.h>
 
 /**
  * These configuration settings are required to run the mutual auth demo.
@@ -208,7 +215,7 @@
  * The topic name starts with the client identifier to ensure that each demo
  * interacts with a unique topic name.
  */
-#define MQTT_EXAMPLE_TOPIC                  CLIENT_IDENTIFIER "/example/topic"
+#define MQTT_EXAMPLE_TOPIC                  CLIENT_IDENTIFIER "/fuelValue"
 
 /**
  * @brief Length of client MQTT topic.
@@ -218,7 +225,7 @@
 /**
  * @brief The MQTT message published in this example.
  */
-#define MQTT_EXAMPLE_MESSAGE                "Hello AWS from Ian's RPi!"
+#define MQTT_EXAMPLE_MESSAGE                "FuelValue is 1"
 
 /**
  * @brief The length of the MQTT message published in this example.
@@ -625,7 +632,7 @@ static int connectToServerWithBackoffRetries( NetworkContext_t * pNetworkContext
     }
 
     /* Initialize reconnect attempts and interval */
-    BackoffAlgorithm_InitializeParams( &reconnectParams,
+    /*BackoffAlgorithm_InitializeParams( &reconnectParams,
                                        CONNECTION_RETRY_BACKOFF_BASE_MS,
                                        CONNECTION_RETRY_MAX_BACKOFF_DELAY_MS,
                                        CONNECTION_RETRY_MAX_ATTEMPTS );
@@ -859,6 +866,38 @@ static void handleIncomingPublish( MQTTPublishInfo_t * pPublishInfo,
                    packetIdentifier,
                    ( int ) pPublishInfo->payloadLength,
                    ( const char * ) pPublishInfo->pPayload ) );
+                   /* This section handles the payload if it is an integer and passes the value to the motor control
+                    * function*/
+                   long int fuel;
+                   fuel = strtol(( const char * ) pPublishInfo->pPayload, NULL, 10 );
+                   printf("The fuel value is %ld \n\r", fuel); 
+                   char input[20];
+                   // sprintf(input, "motor.motor(%d)", fuel);
+                   // Calling motor control python module
+                   PyObject *pName, *pModule, *pFunc;
+                   PyObject *pArgs, *pValue;
+                   int i;
+                   Py_Initialize();
+                   PyRun_SimpleString(
+                            "import sys\n"
+                            "sys.path.append('/home/pi/Documents/arigato/Arigato_Crypto_Roboto/RPi/motor_control')\n"
+                    );
+                    pName = PyUnicode_DecodeFSDefault("motor");
+                    pModule = PyImport_Import(pName);
+                    Py_DECREF(pName);
+                    if (pModule != NULL)
+                    {
+                        pFunc = PyObject_GetAttrString(pModule, "motor");
+                        pArgs = PyTuple_New(1);
+                        pValue = PyLong_FromLong(fuel);
+                        PyTuple_SetItem(pArgs, 0, pValue);
+                        PyObject_CallObject(pFunc, pArgs);
+                        
+                        LogInfo(("Success!\n"));
+                    }
+                    Py_XDECREF(pFunc);
+                    Py_DECREF(pModule);
+                    Py_Finalize(); 
     }
     else
     {
@@ -1393,11 +1432,11 @@ static int subscribePublishLoop( MQTTContext_t * pMqttContext )
         returnStatus = handleResubscribe( pMqttContext );
     }
 
-    if( returnStatus == EXIT_SUCCESS )
+    /*if( returnStatus == EXIT_SUCCESS )
     {
         /* Publish messages with QOS1, receive incoming messages and
          * send keep alive messages. */
-        for( publishCount = 0; publishCount < maxPublishCount; publishCount++ )
+        /*for( publishCount = 0; publishCount < maxPublishCount; publishCount++ )
         {
             LogInfo( ( "Sending Publish to the MQTT topic %.*s.",
                        MQTT_EXAMPLE_TOPIC_LENGTH,
@@ -1410,11 +1449,11 @@ static int subscribePublishLoop( MQTTContext_t * pMqttContext )
              * sends ping request to broker if MQTT_KEEP_ALIVE_INTERVAL_SECONDS
              * has expired since the last MQTT packet sent and receive
              * ping responses. */
-            mqttStatus = MQTT_ProcessLoop( pMqttContext, MQTT_PROCESS_LOOP_TIMEOUT_MS );
+            /*mqttStatus = MQTT_ProcessLoop( pMqttContext, MQTT_PROCESS_LOOP_TIMEOUT_MS );
 
             /* For any error in #MQTT_ProcessLoop, exit the loop and disconnect
              * from the broker. */
-            if( mqttStatus != MQTTSuccess )
+            /*if( mqttStatus != MQTTSuccess )
             {
                 LogError( ( "MQTT_ProcessLoop returned with status = %s.",
                             MQTT_Status_strerror( mqttStatus ) ) );
@@ -1425,14 +1464,14 @@ static int subscribePublishLoop( MQTTContext_t * pMqttContext )
             LogInfo( ( "Delay before continuing to next iteration.\n\n" ) );
 
             /* Leave connection idle for some time. */
-            sleep( DELAY_BETWEEN_PUBLISHES_SECONDS );
+            /*sleep( DELAY_BETWEEN_PUBLISHES_SECONDS );
         }
-    }
+    }*/
 
-    if( returnStatus == EXIT_SUCCESS )
+    /*if( returnStatus == EXIT_SUCCESS )
     {
         /* Unsubscribe from the topic. */
-        LogInfo( ( "Unsubscribing from the MQTT topic %.*s.",
+        /*LogInfo( ( "Unsubscribing from the MQTT topic %.*s.",
                    MQTT_EXAMPLE_TOPIC_LENGTH,
                    MQTT_EXAMPLE_TOPIC ) );
         returnStatus = unsubscribeFromTopic( pMqttContext );
@@ -1441,7 +1480,7 @@ static int subscribePublishLoop( MQTTContext_t * pMqttContext )
     if( returnStatus == EXIT_SUCCESS )
     {
         /* Process Incoming UNSUBACK packet from the broker. */
-        mqttStatus = MQTT_ProcessLoop( pMqttContext, MQTT_PROCESS_LOOP_TIMEOUT_MS );
+        /*mqttStatus = MQTT_ProcessLoop( pMqttContext, MQTT_PROCESS_LOOP_TIMEOUT_MS );
 
         if( mqttStatus != MQTTSuccess )
         {
@@ -1449,12 +1488,12 @@ static int subscribePublishLoop( MQTTContext_t * pMqttContext )
             LogError( ( "MQTT_ProcessLoop returned with status = %s.",
                         MQTT_Status_strerror( mqttStatus ) ) );
         }
-    }
+    }*/
 
     /* Send an MQTT Disconnect packet over the already connected TCP socket.
      * There is no corresponding response for the disconnect packet. After sending
      * disconnect, client must close the network connection. */
-    LogInfo( ( "Disconnecting the MQTT connection with %.*s.",
+    /*LogInfo( ( "Disconnecting the MQTT connection with %.*s.",
                AWS_IOT_ENDPOINT_LENGTH,
                AWS_IOT_ENDPOINT ) );
 
@@ -1462,7 +1501,7 @@ static int subscribePublishLoop( MQTTContext_t * pMqttContext )
     {
         /* Returned status is not used to update the local status as there
          * were failures in demo execution. */
-        ( void ) disconnectMqttSession( pMqttContext );
+        /*( void ) disconnectMqttSession( pMqttContext );
     }
     else
     {
@@ -1470,7 +1509,7 @@ static int subscribePublishLoop( MQTTContext_t * pMqttContext )
     }
 
     /* Reset global SUBACK status variable after completion of subscription request cycle. */
-    globalSubAckStatus = MQTTSubAckFailure;
+    //globalSubAckStatus = MQTTSubAckFailure;
 
     return returnStatus;
 }
@@ -1548,13 +1587,13 @@ int main( int argc,
                 /* Check if session is present and if there are any outgoing publishes
                  * that need to resend. This is only valid if the broker is
                  * re-establishing a session which was already present. */
-                if( brokerSessionPresent == true )
+                /*if( brokerSessionPresent == true )
                 {
                     LogInfo( ( "An MQTT session with broker is re-established. "
                                "Resending unacked publishes." ) );
 
                     /* Handle all the resend of publish messages. */
-                    returnStatus = handlePublishResend( &mqttContext );
+                    /*returnStatus = handlePublishResend( &mqttContext );
                 }
                 else
                 {
@@ -1563,7 +1602,7 @@ int main( int argc,
 
                     /* Clean up the outgoing publishes waiting for ack as this new
                      * connection doesn't re-establish an existing session. */
-                    cleanupOutgoingPublishes();
+                    /*cleanupOutgoingPublishes();
                 }
 
                 /* If TLS session is established, execute Subscribe/Publish loop. */
@@ -1577,10 +1616,10 @@ int main( int argc,
             }
 
             /* End TLS session, then close TCP connection. */
-            ( void ) Openssl_Disconnect( &networkContext );
+            //( void ) Openssl_Disconnect( &networkContext );
 
-            LogInfo( ( "Short delay before starting the next iteration....\n" ) );
-            sleep( MQTT_SUBPUB_LOOP_DELAY_SECONDS );
+            //LogInfo( ( "Short delay before starting the next iteration....\n" ) );
+            //sleep( MQTT_SUBPUB_LOOP_DELAY_SECONDS );
         }
     }
 
