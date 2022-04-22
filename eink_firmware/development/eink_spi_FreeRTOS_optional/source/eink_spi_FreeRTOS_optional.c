@@ -43,19 +43,134 @@
 #include "fsl_dspi.h"
 #include "eink.h"
 #include "fsl_component_button.h"
+#include "fsl_port.h"
+#include "fsl_component_timer_manager.h"
 /* TODO: insert other definitions and declarations here. */
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
-#define BUTTON_PRESSED_MASK 0x1
-#define ON                  1U
-#define OFF					0U
+#define PIN4_IDX                         4u   /*!< Pin number for pin 4 in a port */
+#define TIMER_SOURCE_CLOCK        CLOCK_GetFreq(kCLOCK_BusClk)
+
+/*! @brief display_state definition */
+typedef enum _display_state
+{
+    kDisplay_DoNothing         = 0U,
+	kDisplay_Clear             = 1U,
+	kDisplay_PrintPrimaryImage = 2U,
+	kDisplay_PrintSecondImage  = 3U,
+
+} display_state_t;
+
 
 /*******************************************************************************
  * Variables
  ******************************************************************************/
 
-volatile uint8_t display_state = ON;
+volatile display_state_t display_state = kDisplay_DoNothing;
+
+
+/*******************************************************************************
+ * Prototypes
+ ******************************************************************************/
+void displayPrimaryImage(void);
+void displaySecondaryImage(void);
+void EINK_initialize_button(void);
+button_status_t button_callback(void *buttonHandle, button_callback_message_t *message, void *callbackParam);
+
+ /*******************************************************************************
+  * Functions
+  ******************************************************************************/
+void displayPrimaryImage(void)
+{
+	/* Drawing Sequence */
+	EINK_Init(); // brings the cursor to top left corner of screen (0,0)
+	EINK_Clear(); // clears any image on screen
+	EINK_Display(gImage_github_qrcode_words, 3888); // draw the github image
+}
+
+void displaySecondaryImage(void)
+{
+//	/* Drawing Sequence */
+//	EINK_Init(); // brings the cursor to top left corner of screen (0,0)
+//	EINK_Clear(); // clears any image on screen
+//	EINK_Display(gImage_github_qrcode_words, 3888); // draw the github image
+
+	EINK_Init();
+	EINK_Clear();
+	EINK_Display(gImage_github_qrcode, GITHUB_IMAGE_SIZE);
+}
+
+ void EINK_configure_button(void)
+ {
+	 /* Port A Clock Gate Control: Clock enabled */
+	 CLOCK_EnableClock(kCLOCK_PortA);
+
+	 /* Timer configuration needed for interrupts and determining the state of the button */
+	 timer_config_t timerConfig;
+
+	 timerConfig.instance       = 0U;
+	 timerConfig.srcClock_Hz    = TIMER_SOURCE_CLOCK;
+	 timerConfig.clockSrcSelect = 0U;
+	 TM_Init(&timerConfig);
+
+	 /* Set up port pin for the button SW3*/
+	 const port_pin_config_t porta4_pin38_config = {
+			 kPORT_PullUp,                                            /* Internal pull-up resistor is enabled */
+			 kPORT_FastSlewRate,                                      /* Fast slew rate is configured */
+			 kPORT_PassiveFilterDisable,                              /* Passive filter is disabled */
+			 kPORT_OpenDrainDisable,                                  /* Open drain is disabled */
+			 kPORT_HighDriveStrength,                                 /* High drive strength is configured */
+			 kPORT_MuxAsGpio,                                         /* Pin is configured as PTA4 */
+			 kPORT_UnlockRegister                                     /* Pin Control Register fields [15:0] are not locked */
+	 };
+
+	PORT_SetPinConfig(PORTA, PIN4_IDX, &porta4_pin38_config);  /* PORTA4 (pin 38) is configured as PTA4 */
+
+	/* Button configuration sequence */
+	static BUTTON_HANDLE_DEFINE(buttonHandle);
+	button_config_t buttonConfig;
+	buttonConfig.gpio.direction = kHAL_GpioDirectionIn,
+	buttonConfig.gpio.port = 0;
+	buttonConfig.gpio.pin  = BOARD_SW3_GPIO_PIN; // PORTA6
+	buttonConfig.gpio.pinStateDefault = 1;
+	BUTTON_Init((button_handle_t) buttonHandle, &buttonConfig);
+	BUTTON_InstallCallback((button_handle_t) buttonHandle, button_callback, NULL);
+ }
+
+ button_status_t button_callback(void *buttonHandle, button_callback_message_t *message, void *callbackParam)
+ {
+     button_status_t status = kStatus_BUTTON_Success;
+
+     switch (message->event)
+     {
+         case kBUTTON_EventOneClick:
+             PRINTF("kBUTTON_EventOneClick\r\n");
+             display_state = kDisplay_DoNothing;
+             break;
+         case kBUTTON_EventShortPress:
+             PRINTF("kBUTTON_EventShortPress\r\n");
+             display_state = kDisplay_PrintPrimaryImage;
+             break;
+         case kBUTTON_EventDoubleClick:
+             PRINTF("kBUTTON_EventDoubleClick\r\n");
+             display_state = kDisplay_PrintSecondImage;
+             break;
+         case kBUTTON_EventLongPress:
+             PRINTF("kBUTTON_EventLongPress\r\n");
+             display_state = kDisplay_Clear;
+             break;
+         case kBUTTON_EventError:
+             PRINTF("kBUTTON_EventError\r\n");
+             break;
+         default:
+             status = kStatus_BUTTON_Error;
+             break;
+     }
+
+     return status;
+ }
+
 
 
 /*******************************************************************************
@@ -77,13 +192,15 @@ int main(void) {
 #endif
     PRINTF("Welcome to the E-INK Display\r\n");
 
-    /*SPI and EINK display initialization*/
-    EINK_InitSequenceSPI();
-    EINK_test();
+    /* Initialize SW3 button on FRDM board*/
+    EINK_configure_button();
 
+	/*SPI and EINK display initialization*/
+	EINK_InitSequenceSPI();
+//    EINK_test();
 
     /* Force the counter to be placed into memory. */
-    volatile static int i = 0 ;
+//    volatile static int i = 0 ;
     /* Enter an infinite loop, just incrementing a counter. */
     while(1) {
 //        i++ ;
@@ -91,11 +208,25 @@ int main(void) {
 //            tight while() loop */
 //        __asm volatile ("nop");
 
-    	if (display_state == OFF){
+    	if (display_state == kDisplay_Clear)
+    	{
     		EINK_Clear();
+    		display_state = kDisplay_DoNothing;
     	}
+    	else if (display_state == kDisplay_PrintPrimaryImage)
+		{
+    		displayPrimaryImage();
+			display_state = kDisplay_DoNothing;
+		}
+    	else if (display_state == kDisplay_PrintSecondImage)
+		{
+    		displaySecondaryImage();
+    		display_state = kDisplay_DoNothing;
+		}
+
 
 
     }
+
     return 0 ;
 }
