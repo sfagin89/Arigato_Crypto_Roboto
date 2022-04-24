@@ -215,7 +215,7 @@
  * The topic name starts with the client identifier to ensure that each demo
  * interacts with a unique topic name.
  */
-#define MQTT_EXAMPLE_TOPIC                  CLIENT_IDENTIFIER "/fuelValue"
+#define MQTT_EXAMPLE_TOPIC                   "robot/move_command"
 
 /**
  * @brief Length of client MQTT topic.
