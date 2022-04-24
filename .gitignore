@@ -3,3 +3,9 @@
 /RPi/arigato_shadow/demo_config.h
 /RPi/arigato_shadow2/demo_config.h
 /RPi/arigato_shadow2/mqtt_demo_mutual_auth/demo_config.h
+crypto_app/resources/__pycache__/__init__.cpython-39.pyc
+crypto_app/resources/__pycache__/keys.cpython-39.pyc
+crypto_app/resources/keys.py
+crypto_app/resources/certificates/santi_aws_iot-AmazonRootCA1.pem
+crypto_app/resources/certificates/santi_aws_iot-certificate.pem.crt
+crypto_app/resources/certificates/santi_aws_iot-private.pem.key

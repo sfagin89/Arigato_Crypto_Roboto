@@ -120,8 +120,8 @@ typedef enum _gpio_pin_hi_low
 #define EINK_BUSY_GPIO_PIN_MASK (1U << 26U)  /*!<@brief GPIO pin mask */
 
 /* Symbols to be used with PORT driver */
-#define EINK_BUSY_PORT PORTE                 /*!<@brief PORT peripheral base pointer */
-#define EINK_BUSY_PIN 26U                    /*!<@brief PORT pin number */
+#define EINK_BUSY_PORT PORTE//PORTC                 /*!<@brief PORT peripheral base pointer */
+#define EINK_BUSY_PIN 26U//5U                    /*!<@brief PORT pin number */
 #define EINK_BUSY_PIN_MASK (1U << 26U)       /*!<@brief PORT pin mask */
                                                 /* @} */
 
@@ -131,8 +131,8 @@ typedef enum _gpio_pin_hi_low
 volatile extern uint32_t g_systickCounter_eink; // needed for creating system delay
 volatile extern uint8_t _WF_PARTIAL_2IN9[159]; // provided by Waveshare sample code
 volatile extern uint8_t WS_20_30[159]; // provided by Waveshare sample code
-const extern UBYTE gImage_test_qrcode[TEST_IMAGE_SIZE]; // sample image to testing
 const extern UBYTE gImage_github_qrcode[GITHUB_IMAGE_SIZE]; // qrcode to our github
+const extern UBYTE gImage_github_qrcode_words[3888];
 
 /*******************************************************************************
  * Prototypes
@@ -146,6 +146,7 @@ extern void EINK_Init(void);
 extern void EINK_Clear(void);
 extern void EINK_Display(UBYTE *Image, UWORD Image_Size);
 extern void EINK_ReadBusy(void);
+extern void EINK_Sleep(void);
 static void EINK_TurnOnDisplay(void);
 static void EINK_TurnOnDisplay_Partial(void);
 static void EINK_SendCommand(UBYTE byte);
