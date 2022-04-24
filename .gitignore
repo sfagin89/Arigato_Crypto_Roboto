@@ -9,3 +9,4 @@ crypto_app/resources/keys.py
 crypto_app/resources/certificates/santi_aws_iot-AmazonRootCA1.pem
 crypto_app/resources/certificates/santi_aws_iot-certificate.pem.crt
 crypto_app/resources/certificates/santi_aws_iot-private.pem.key
+crypto_app/resources/certificates/*
