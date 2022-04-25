@@ -35,8 +35,8 @@ GND        J3 pin 14               		GND
 3.3V	   J3 pin 4						VCC
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Prepare the Demo
-================
+Running the firmware
+====================
 1.  Connect a mini USB cable between the PC host and the OpenSDA USB port on the board.
 2.  Open a serial terminal on PC for OpenSDA serial device with these settings:
     - 115200 baud rate
@@ -46,6 +46,19 @@ Prepare the Demo
     - No flow control
 3.  Download the program to the target board.
 4.  Reset the SoC and run the project.
+
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Controlling the E-INK Display:
+
+Button SW3, next to the RGB LED, controls the e-ink display.
+
+Quick Single Press --> clears screen and displays 1st image
+Regular Single Press --> clears screen and displays 2nd image
+Two Quick Single Presses --> clears screen and displays 3rd image
+Long Single Presses --> clears screen and leaves it blank
+
  
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Note about the base code for the Waveshare E-INK Display:
