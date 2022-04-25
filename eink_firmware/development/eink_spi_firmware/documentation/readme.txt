@@ -32,7 +32,7 @@ PORTC3     J1 pin 16					CS
 SCK        J2 pin 12           			CLK
 SOUT       J2 pin 8            			DIN     
 GND        J3 pin 14               		GND       
-3.3V	   J3 pin 2						VCC
+3.3V	   J3 pin 4						VCC
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Prepare the Demo
