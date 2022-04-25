@@ -1,11 +1,9 @@
 Overview
 ========
-The dspi_polling_b2b_transfer example shows how to use DSPI driver in polling way:
+'eink_spi_firmware.c' is an implementation for controlling and displaying images on a Waveshare 2.9 inch V2
+e-ink module.
 
-In this example , we need two boards, one board used as DSPI master and another board used as DSPI slave.
-The file 'dspi_polling_b2b_transfer_master.c' includes the DSPI master code.
-
-1. DSPI master send/received data to/from DSPI slave in polling . (DSPI Slave using interrupt to receive/send the data)
+The controller is the FRDM-K64F board, and it communicates to the e-ink display via SPI.
 
 Toolchain supported
 ===================
@@ -22,17 +20,19 @@ Hardware requirements
 
 Board settings
 ==============
-SPI one board:
-Transfer data from one instance to anther instance on the other board.
+Wiring between FRDM-K64F board and Waveshare 2.9 in V2 e-ink display
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- FRDM Board                            E-INK Display
-INSTANCE0(SPI0)     CONNECTS TO         INSTANCE1(SPI0)
-Pin Name   Board Location     Pin Name  Board Location
-SIN        J2 pin 10           SOUT      J2 pin 8
-SOUT       J2 pin 8            SIN       J2 pin 10
-SCK        J2 pin 12           SCK       J2 pin 12
-PCS0       J2 pin 6            PCS0      J2 pin 6
-GND        J2-14               GND       J2-14
+FRDM Board                              E-INK Display
+INSTANCE0(SPI)      CONNECTS TO         INSTANCE1(SPI)
+Pin Name   Board Location     			Pin Name  
+PORTE26	   J2 pin 1						BUSY
+PORTC12    J2 pin 2    					RST
+PORTC4     J2 pin 4						D/C    
+PORTC3     J1 pin 16					CS      
+SCK        J2 pin 12           			CLK
+SOUT       J2 pin 8            			DIN     
+GND        J3 pin 14               		GND       
+3.3V	   J3 pin 2						VCC
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Prepare the Demo
@@ -46,55 +46,25 @@ Prepare the Demo
     - No flow control
 3.  Download the program to the target board.
 4.  Reset the SoC and run the project.
-
-
-The section below needs to be deleted/reworked.
-Running the demo
-================
-When the demo runs successfully, the log would be seen on the OpenSDA terminal like:
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-DSPI board to board polling example.
-This example use one board as master and another as slave.
-Master uses polling way and slave uses interrupt way. 
-Please make sure you make the correct line connection. Basically, the connection is: 
-DSPI_master -- DSPI_slave   
-   CLK      --    CLK  
-   PCS      --    PCS 
-   SOUT     --    SIN  
-   SIN      --    SOUT 
-   GND      --    GND 
-
- Master transmit:
-
-  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F 10
- 11 12 13 14 15 16 17 18 19 1A 1B 1C 1D 1E 1F 20
- 21 22 23 24 25 26 27 28 29 2A 2B 2C 2D 2E 2F 30
- 31 32 33 34 35 36 37 38 39 3A 3B 3C 3D 3E 3F 40
  
-DSPI transfer all data matched! 
-
- Master received:
-
-  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F 10
- 11 12 13 14 15 16 17 18 19 1A 1B 1C 1D 1E 1F 20
- 21 22 23 24 25 26 27 28 29 2A 2B 2C 2D 2E 2F 30
- 31 32 33 34 35 36 37 38 39 3A 3B 3C 3D 3E 3F 40
-
- Press any key to run again
- 
- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Note about the base code for the Waveshare E-INK Display:
 
-add comment here
+Waveshare provides open source code to integrate their display with STM32-F103ZET6 mcu.
+Their is source code is at https://github.com/waveshare/e-Paper/tree/master/STM32/STM32-F103ZET6
+
+I adapted their code so that it utilizes the SPI commands for the FRDM-K64F board.
+The relevant source files for the display are 'eink.h' and 'eink.c'.
+
+'eink_spi_firmware.c' also initializes the SW3 button on the FRDM-K64F board.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Note about SysTick_Handler:
 
 Commented out the FreeRTOS SysTick_Handler function so that I can use my own custom handler.
 FreeRTOS SysTick_Handler function located in --> 
-/eink_spi_FreeRTOS_optional/freertos/freertos_kernel/portable/GCC/ARM_CM4F/port.c
+/eink_spi_firmware/freertos/freertos_kernel/portable/GCC/ARM_CM4F/port.c
 To activate it, uncomment the function prototype and function definition.
 
-My custom Systick_Handler is in --> /eink_spi_FreeRTOS_optional/source/eink.c
+My custom Systick_Handler is in --> /eink_spi_firmware/source/eink.c
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
