@@ -46,9 +46,12 @@ typedef unsigned short uint16_t;
 #define EINK_2IN9_V2_WIDTH  128
 #define EINK_2IN9_V2_HEIGHT 296
 
-#define TEST_IMAGE_SIZE     2048
-#define  GITHUB_IMAGE_SIZE   2048
-
+#define GITHUB_IMAGE_SIZE   2048
+#define GITHUB_QRCODE_WORDS_SIZE  3888
+#define GITHUB_WORDS_CONTROL_SIZE 3840
+#define SANTI_DOGE_QRCODE_SIZE    2032
+#define SANTI_DOGE_WALLET_SIZE    3872
+#define IAN_DOGE_WALLET_SIZE      3840
 
 /*! @brief High/Low definition */
 typedef enum _gpio_pin_hi_low
@@ -132,7 +135,11 @@ volatile extern uint32_t g_systickCounter_eink; // needed for creating system de
 volatile extern uint8_t _WF_PARTIAL_2IN9[159]; // provided by Waveshare sample code
 volatile extern uint8_t WS_20_30[159]; // provided by Waveshare sample code
 const extern UBYTE gImage_github_qrcode[GITHUB_IMAGE_SIZE]; // qrcode to our github
-const extern UBYTE gImage_github_qrcode_words[3888];
+const extern UBYTE gImage_github_qrcode_words[GITHUB_QRCODE_WORDS_SIZE];
+const extern UBYTE gImage_github_words_control[GITHUB_WORDS_CONTROL_SIZE];
+const extern UBYTE gImage_santi_doge_qrcode[SANTI_DOGE_QRCODE_SIZE];
+const extern UBYTE gImage_santi_doge_wallet[SANTI_DOGE_WALLET_SIZE];
+const extern UBYTE gImage_ian_doge_wallet[IAN_DOGE_WALLET_SIZE];
 
 /*******************************************************************************
  * Prototypes

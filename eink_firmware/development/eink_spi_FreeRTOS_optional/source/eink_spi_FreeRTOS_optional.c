@@ -49,16 +49,17 @@
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
-#define PIN4_IDX                         4u   /*!< Pin number for pin 4 in a port */
+#define PIN4_IDX                  4u   /*!< Pin number for pin 4 in a port */
 #define TIMER_SOURCE_CLOCK        CLOCK_GetFreq(kCLOCK_BusClk)
 
 /*! @brief display_state definition */
 typedef enum _display_state
 {
     kDisplay_DoNothing         = 0U,
-	kDisplay_Clear             = 1U,
-	kDisplay_PrintPrimaryImage = 2U,
-	kDisplay_PrintSecondImage  = 3U,
+	kDisplay_PrintPrimaryImage = 1U,
+	kDisplay_PrintSecondImage  = 2U,
+	kDisplay_PrintThirdImage   = 3U,
+	kDisplay_Clear             = 4U
 
 } display_state_t;
 
@@ -67,15 +68,20 @@ typedef enum _display_state
  * Variables
  ******************************************************************************/
 
-volatile display_state_t display_state = kDisplay_DoNothing;
+volatile display_state_t display_state;
 
 
 /*******************************************************************************
  * Prototypes
  ******************************************************************************/
+
+/* Functions for displaying different images. */
 void displayPrimaryImage(void);
 void displaySecondaryImage(void);
-void EINK_initialize_button(void);
+void displayThirdImage(void);
+
+/* Functions for setting up SW3 button of FRDM board. */
+void SW3_configure_button(void);
 button_status_t button_callback(void *buttonHandle, button_callback_message_t *message, void *callbackParam);
 
  /*******************************************************************************
@@ -86,22 +92,28 @@ void displayPrimaryImage(void)
 	/* Drawing Sequence */
 	EINK_Init(); // brings the cursor to top left corner of screen (0,0)
 	EINK_Clear(); // clears any image on screen
-	EINK_Display(gImage_github_qrcode_words, 3888); // draw the github image
+	EINK_Display(gImage_ian_doge_wallet, IAN_DOGE_WALLET_SIZE); // draw the dogecoin wallet image
 }
 
 void displaySecondaryImage(void)
 {
-//	/* Drawing Sequence */
-//	EINK_Init(); // brings the cursor to top left corner of screen (0,0)
-//	EINK_Clear(); // clears any image on screen
-//	EINK_Display(gImage_github_qrcode_words, 3888); // draw the github image
 
-	EINK_Init();
-	EINK_Clear();
-	EINK_Display(gImage_github_qrcode, GITHUB_IMAGE_SIZE);
+	/* Drawing Sequence */
+	EINK_Init(); // brings the cursor to top left corner of screen (0,0)
+	EINK_Clear(); // clears any image on screen
+	EINK_Display(gImage_santi_doge_wallet, SANTI_DOGE_WALLET_SIZE); // draw the dogecoin wallet image
+
 }
 
- void EINK_configure_button(void)
+void displayThirdImage(void)
+{
+	/* Drawing Sequence */
+	EINK_Init(); // brings the cursor to top left corner of screen (0,0)
+	EINK_Clear(); // clears any image on screen
+	EINK_Display(gImage_github_qrcode_words, 3888); // draw the github image
+}
+
+ void SW3_configure_button(void)
  {
 	 /* Port A Clock Gate Control: Clock enabled */
 	 CLOCK_EnableClock(kCLOCK_PortA);
@@ -142,19 +154,20 @@ void displaySecondaryImage(void)
  {
      button_status_t status = kStatus_BUTTON_Success;
 
+     /* Set the display_state based on the type of button press */
      switch (message->event)
      {
          case kBUTTON_EventOneClick:
              PRINTF("kBUTTON_EventOneClick\r\n");
-             display_state = kDisplay_DoNothing;
+             display_state = kDisplay_PrintPrimaryImage;
              break;
          case kBUTTON_EventShortPress:
              PRINTF("kBUTTON_EventShortPress\r\n");
-             display_state = kDisplay_PrintPrimaryImage;
+             display_state = kDisplay_PrintSecondImage;
              break;
          case kBUTTON_EventDoubleClick:
              PRINTF("kBUTTON_EventDoubleClick\r\n");
-             display_state = kDisplay_PrintSecondImage;
+             display_state = kDisplay_PrintThirdImage;
              break;
          case kBUTTON_EventLongPress:
              PRINTF("kBUTTON_EventLongPress\r\n");
@@ -174,7 +187,7 @@ void displaySecondaryImage(void)
 
 
 /*******************************************************************************
- * Code
+ * Main Code
  ******************************************************************************/
 
 /*
@@ -186,27 +199,25 @@ int main(void) {
     BOARD_InitBootPins();
     BOARD_InitBootClocks();
     BOARD_InitBootPeripherals();
+
 #ifndef BOARD_INIT_DEBUG_CONSOLE_PERIPHERAL
     /* Init FSL debug console. */
     BOARD_InitDebugConsole();
 #endif
+
     PRINTF("Welcome to the E-INK Display\r\n");
 
     /* Initialize SW3 button on FRDM board*/
-    EINK_configure_button();
+    SW3_configure_button();
 
 	/*SPI and EINK display initialization*/
 	EINK_InitSequenceSPI();
-//    EINK_test();
 
-    /* Force the counter to be placed into memory. */
-//    volatile static int i = 0 ;
-    /* Enter an infinite loop, just incrementing a counter. */
+	display_state = kDisplay_PrintPrimaryImage; // start by printing the primary image
+
+
+	/* Super-loop checking for changes resulting from button press. */
     while(1) {
-//        i++ ;
-//        /* 'Dummy' NOP to allow source level single stepping of
-//            tight while() loop */
-//        __asm volatile ("nop");
 
     	if (display_state == kDisplay_Clear)
     	{
@@ -223,10 +234,16 @@ int main(void) {
     		displaySecondaryImage();
     		display_state = kDisplay_DoNothing;
 		}
-
-
-
+    	else if (display_state == kDisplay_PrintThirdImage)
+		{
+			displayThirdImage();
+			display_state = kDisplay_DoNothing;
+		}
     }
 
     return 0 ;
 }
+
+/***********************************************************************************************************************
+ * EOF
+ **********************************************************************************************************************/
