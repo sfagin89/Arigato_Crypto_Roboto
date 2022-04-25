@@ -29,7 +29,7 @@
  */
 
 /**
- * @file    eink_spi_FreeRTOS_optional.c
+ * @file    eink_spi_firmware.c
  * @brief   Application entry point.
  */
 #include <stdio.h>
@@ -39,13 +39,15 @@
 #include "clock_config.h"
 #include "MK64F12.h"
 #include "fsl_debug_console.h"
-/* TODO: insert other include files here. */
+
+/* Insert other include files here. */
 #include "fsl_dspi.h"
 #include "eink.h"
 #include "fsl_component_button.h"
 #include "fsl_port.h"
 #include "fsl_component_timer_manager.h"
-/* TODO: insert other definitions and declarations here. */
+
+/* Insert other definitions and declarations here. */
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
@@ -74,7 +76,6 @@ volatile display_state_t display_state;
 /*******************************************************************************
  * Prototypes
  ******************************************************************************/
-
 /* Functions for displaying different images. */
 void displayPrimaryImage(void);
 void displaySecondaryImage(void);
