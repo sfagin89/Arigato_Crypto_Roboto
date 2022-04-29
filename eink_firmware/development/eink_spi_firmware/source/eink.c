@@ -1264,7 +1264,7 @@ parameter:
 ******************************************************************************/
 static void EINK_SendCommand(UBYTE byte)
 {
-	GPIO_PinWrite(EINK_DC_GPIO, EINK_DC_PIN, kGPIO_Low);
+	GPIO_PinWrite(EINK_DC_GPIO, EINK_DC_PIN, kGPIO_Low); // DC low tells display data coming over SPI is a command
 	GPIO_PinWrite(EINK_CS_GPIO, EINK_CS_PIN, kGPIO_Low);
 
 	// spi transfer goes, the controller is the K64 FRDM board
@@ -1286,7 +1286,7 @@ parameter:
 ******************************************************************************/
 static void EINK_SendData(UBYTE byte)
 {
-	GPIO_PinWrite(EINK_DC_GPIO, EINK_DC_PIN, kGPIO_Hi);
+	GPIO_PinWrite(EINK_DC_GPIO, EINK_DC_PIN, kGPIO_Hi); // DC high tells display that data coming over SPI is data
 	GPIO_PinWrite(EINK_CS_GPIO, EINK_CS_PIN, kGPIO_Low);
 
 	// spi transfer goes, the controller is the K64 FRDM board
