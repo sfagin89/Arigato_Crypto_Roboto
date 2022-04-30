@@ -1201,7 +1201,7 @@ void EINK_Display(UBYTE *Image, UWORD Image_Size)
 	delay_ms(3000U); // delay needed to provide time buffer for the data transfer to succeed
 	UWORD i;
 	EINK_SendCommand(0x24);   //write RAM for black(0)/white (1)
-	for(i=0;i<Image_Size/*4736*/;i++)
+	for(i=0;i<Image_Size;i++)
 	{
 		EINK_SendData(Image[i]);
 	}
@@ -1220,7 +1220,7 @@ void EINK_ReadBusy(void)
 	{	 //=1 BUSY
 		if(GPIO_PinRead(EINK_BUSY_GPIO, EINK_BUSY_PIN)==0)
 			break;
-		delay_ms(50U); // 50U originally
+		delay_ms(50U);
 	}
 	delay_ms(50U);
 	PRINTF("e-Paper busy release\r\n");
