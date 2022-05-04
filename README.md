@@ -8,8 +8,13 @@ Our project employs various technologies, including low-level firmware, custom P
 - [Waveshare’s 2.9 inch V2 e-ink display](https://www.waveshare.com/wiki/4.2inch_e-Paper_Module)
 - [Adafruit Stepper + DC Motor FeatherWing motor control board](https://learn.adafruit.com/adafruit-stepper-dc-motor-featherwing)
 - [RaspberryPi 3 B+](https://www.raspberrypi.com/products/raspberry-pi-3-model-b-plus/)
-- [JetBot Chassis](https://jetbot.org/master/index.html)
-- 
+- [JetBot Chassis and motors](https://jetbot.org/master/index.html)
+- [Custom PCB for e-Ink](https://github.com/sfagin89/Arigato_Crypto_Roboto/tree/main/PCB_files)
+
+# Software
+- [Custom e-Ink Firmware](https://github.com/sfagin89/Arigato_Crypto_Roboto/tree/main/eink_firmware/development/eink_spi_firmware)
+- [Robot Software](https://github.com/sfagin89/Arigato_Crypto_Roboto/tree/main/RPi)
+- [Crypto App](https://github.com/sfagin89/Arigato_Crypto_Roboto/tree/main/crypto_app)
 
 # Functional Block Diagrams
 
