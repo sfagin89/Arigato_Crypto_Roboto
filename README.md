@@ -37,13 +37,13 @@ Our project employs various technologies, including low-level firmware, custom P
 ![Custom PCB Schematic](https://github.com/sfagin89/Arigato_Crypto_Roboto/blob/e5e9a5214d5f0a81ab09beffe147bd4ab1f389d4/PCB_files/ECE544_v3_schem.png)
 
 ### Final PCB Board Layout
-![Custom PCB Board Layout](https://github.com/sfagin89/Arigato_Crypto_Roboto/blob/e5e9a5214d5f0a81ab09beffe147bd4ab1f389d4/PCB_files/ECE544_v3_board.png)
+![Custom PCB Board Layout](https://github.com/sfagin89/Arigato_Crypto_Roboto/blob/c02a1528563c0215d122c3ca72903ed1fb15780a/PCB_files/ECE544_v3_board.png)
 
 ### PCB Board Top Layer
-![Custom PCB Board Layout - Top Layer](https://github.com/sfagin89/Arigato_Crypto_Roboto/blob/main/PCB_files/ECE544_v3_board_top.png)
+![Custom PCB Board Layout - Top Layer](https://github.com/sfagin89/Arigato_Crypto_Roboto/blob/c02a1528563c0215d122c3ca72903ed1fb15780a/PCB_files/ECE544_v3_board_top.png)
 
 ### PCB Board Bottom Layer
-![Custom PCB Board Layout - Bottom Layer](https://github.com/sfagin89/Arigato_Crypto_Roboto/blob/e5e9a5214d5f0a81ab09beffe147bd4ab1f389d4/PCB_files/ECE544_v3_board_btm.png)
+![Custom PCB Board Layout - Bottom Layer](https://github.com/sfagin89/Arigato_Crypto_Roboto/blob/c02a1528563c0215d122c3ca72903ed1fb15780a/PCB_files/ECE544_v3_board_btm.png)
 
 ## Functional Block Diagrams
 
