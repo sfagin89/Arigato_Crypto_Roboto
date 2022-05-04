@@ -7,7 +7,7 @@ Spring 2022 Final Project
 
 
 
-This project deploys a Raspberry Pi robotic car, whose movements are controlled by payments to a crypto-wallet. The robot is subscribed to a movement command topic on an AWS MQTT server. Messages are published to that topic when the robot’s crypto-wallet receives currency, Dogecoin in this case. A user scans a QR code that appears on an e-ink display sitting on top of the robot. The display is controlled by a FRDM-64F board and it interfaces with the board via a custom PCB. 
+This project deploys a Raspberry Pi robotic car, whose movements are controlled by payments to a crypto-wallet. The robot is subscribed to a movement command topic on an AWS MQTT server. Messages are published to that topic when the robot’s crypto-wallet receives currency, Dogecoin in this case. A user scans a QR code that appears on an e-ink display sitting on top of the robot. The display is controlled by a FRDM-64F board and it interfaces with the board via a custom PCB.
 
 Our project employs various technologies, including low-level firmware, custom PCB design, IoT communication, APIs, and crypto-currency. Ian Chadwick connected the robot with MQTT, Sara Fagin created the custom PCB for the e-ink display, and Santiago Gomez developed the e-ink firmware for the FRDM-K64F board. He is also responsible for the client application that links the robot’s crypto-wallet with its MQTT Message Broker. This report delves into the implementation of each component. Furthermore, each component discussion provides insight into the development of the respective engineer.
 
@@ -18,6 +18,7 @@ Our project employs various technologies, including low-level firmware, custom P
 - [RaspberryPi 3 B+](https://www.raspberrypi.com/products/raspberry-pi-3-model-b-plus/)
 - [JetBot Chassis and motors](https://jetbot.org/master/index.html)
 - [Custom PCB for e-Ink](https://github.com/sfagin89/Arigato_Crypto_Roboto/tree/main/PCB_files)
+  - [Documentation of Full PCB Assembly](https://github.com/sfagin89/Arigato_Crypto_Roboto/tree/main/PCB_files/PCB%20Assembly)
 
 # Software
 - [Custom e-Ink Firmware](https://github.com/sfagin89/Arigato_Crypto_Roboto/tree/main/eink_firmware/development/eink_spi_firmware)
@@ -30,10 +31,21 @@ Our project employs various technologies, including low-level firmware, custom P
 # Final Report
 - PUT LINK TO PDF/REPORT FOLDER
 
+# Custom PCB Schematic and Board Layout
+- Final PCB Schematic
+![Custom PCB Schematic](https://github.com/sfagin89/Arigato_Crypto_Roboto/blob/e5e9a5214d5f0a81ab09beffe147bd4ab1f389d4/PCB_files/ECE544_v3_schem.png)
+- Final PCB Board Layout
+![Custom PCB Board Layout](https://github.com/sfagin89/Arigato_Crypto_Roboto/blob/e5e9a5214d5f0a81ab09beffe147bd4ab1f389d4/PCB_files/ECE544_v3_board.png)
+- PCB Board Top Layer
+![Custom PCB Board Layout - Top Layer](https://github.com/sfagin89/Arigato_Crypto_Roboto/blob/main/PCB_files/ECE544_v3_board_top.png)
+- PCB Board Bottom Layer
+![Custom PCB Board Layout - Bottom Layer](https://github.com/sfagin89/Arigato_Crypto_Roboto/blob/e5e9a5214d5f0a81ab09beffe147bd4ab1f389d4/PCB_files/ECE544_v3_board_btm.png)
+
 # Functional Block Diagrams
 
 
 ![Technology Stack](https://user-images.githubusercontent.com/30096097/166684281-6e805d7c-9191-4b2c-8d69-3d8db56d2791.jpeg)
+
 
 
 ![Firmware Architecture - E-INK Firmware](https://user-images.githubusercontent.com/30096097/166616635-c3e24d55-607d-4b58-ab62-506a47517805.png)
@@ -52,5 +64,3 @@ Our project employs various technologies, including low-level firmware, custom P
 
 
 ![Firmware Architecture - Crypto App](https://user-images.githubusercontent.com/30096097/166616678-9f83f57f-a751-4170-b36c-24d4db70fd81.png)
-
-
