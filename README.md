@@ -16,6 +16,9 @@ Our project employs various technologies, including low-level firmware, custom P
 - [Robot Software](https://github.com/sfagin89/Arigato_Crypto_Roboto/tree/main/RPi)
 - [Crypto App](https://github.com/sfagin89/Arigato_Crypto_Roboto/tree/main/crypto_app)
 
+# Implementation Video
+- INSERT YOUTUBE LINK HERE!
+
 # Functional Block Diagrams
 
 ![Firmware Architecture - E-INK Firmware](https://user-images.githubusercontent.com/30096097/166616635-c3e24d55-607d-4b58-ab62-506a47517805.png)
