@@ -1,0 +1,31 @@
+Partlist
+
+Exported from EC544.sch at 5/4/2022 2:04 PM
+
+EAGLE Version 9.6.2 Copyright (c) 1988-2020 Autodesk, Inc.
+
+Assembly variant: 
+
+Part     Value            Device           Package          Library          Sheet
+
+C1                        C-EUC0805        C0805            rcl              1
+C14                       C-EUC0805        C0805            rcl              1
+C15                       C-EUC0805        C0805            rcl              1
+C16                       C-EUC0805        C0805            rcl              1
+C17                       C-EUC0805        C0805            rcl              1
+C18                       C-EUC0805        C0805            rcl              1
+C19                       C-EUC0805        C0805            rcl              1
+C20                       C-EUC0805        C0805            rcl              1
+C22                       C-EUC0805        C0805            rcl              1
+C23                       C-EUC0805        C0805            rcl              1
+C24                       C-EUC0805        C0805            rcl              1
+D1       MBR0530          MBR0530          SOD3716X135N     MBR0530          1
+D2       MBR0530          MBR0530          SOD3716X135N     MBR0530          1
+D3       MBR0530          MBR0530          SOD3716X135N     MBR0530          1
+FRDM1                     FRDM-K64FNORMAL  FRDM_K64F        Freedom          1
+J1       52435-2471       52435-2471       MOLEX_52435-2471 52435-2471       1
+JP1                       PINHD-1X3        1X03             pinhead          1
+L1       NR6012T100ME     NR6012T100ME     NR6012T100ME     NR6012T100ME     1
+Q1       SI1308EDL-T1-GE3 SI1308EDL-T1-GE3 SOT65P210X110-3N Si1308EDL-T1-GE3 1
+R1                        R-US_0204/5      0204/5           rcl              1
+R2                        R-US_0204/5      0204/5           rcl              1

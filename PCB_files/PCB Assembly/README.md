@@ -38,11 +38,11 @@ Completed Boards 1, 2, and 3 (Right to Left)
 ![All Completed Boards](https://github.com/sfagin89/Arigato_Crypto_Roboto/blob/11b04aa1cc0aeb6ba8ec5c1d995a5561341a1009/PCB_files/PCB%20Assembly/Boards%201%202%20and%203%20from%20Right%20to%20Left.jpg)
 
 ## Troubleshooting Post Demo Failure
-
-![FPC Troubleshooting Image 1](https://github.com/sfagin89/Arigato_Crypto_Roboto/blob/11b04aa1cc0aeb6ba8ec5c1d995a5561341a1009/PCB_files/PCB%20Assembly/Troubleshooting%201.jpg)
-![FPC Troubleshooting Image 2](https://github.com/sfagin89/Arigato_Crypto_Roboto/blob/11b04aa1cc0aeb6ba8ec5c1d995a5561341a1009/PCB_files/PCB%20Assembly/Troubleshooting%202.jpg)
 - Bridging observed between Pins 3-5
 - Bridging observed between Pins 10 & 11.
 - Possible break in intended bridge between Pins 15 & 16
 - Disconnect of Pins 20-22
 * Important: Pins Counted Right to Left
+
+![FPC Troubleshooting Image 1](https://github.com/sfagin89/Arigato_Crypto_Roboto/blob/11b04aa1cc0aeb6ba8ec5c1d995a5561341a1009/PCB_files/PCB%20Assembly/Troubleshooting%201.jpg)
+![FPC Troubleshooting Image 2](https://github.com/sfagin89/Arigato_Crypto_Roboto/blob/11b04aa1cc0aeb6ba8ec5c1d995a5561341a1009/PCB_files/PCB%20Assembly/Troubleshooting%202.jpg)
