@@ -5,7 +5,7 @@
 ## Soldering Top Layer Surface Mount Components
 
 - Board Top Layer before Soldering surface Mount Components
-![Top and Bottom Layer Pre Assembly](https://github.com/sfagin89/Arigato_Crypto_Roboto/blob/2ca10768e10dea457fb1082b84c7566b8ebcfda0/PCB_files/PCB%20Assembly/Board%201%20-%20Final.jpg)
+![Top and Bottom Layer Pre Assembly](https://github.com/sfagin89/Arigato_Crypto_Roboto/blob/2ca10768e10dea457fb1082b84c7566b8ebcfda0/PCB_files/PCB%20Assembly/Board%201%20-%20Final.jpg | width=400)
 
 Applying Solder to 1 side of each Surface Mounted Capacitor Pad
 
