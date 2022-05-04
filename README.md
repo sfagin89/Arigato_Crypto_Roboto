@@ -32,8 +32,6 @@ Our project employs various technologies, including low-level firmware, custom P
 
 # Functional Block Diagrams
 
-![Technology Stack](https://user-images.githubusercontent.com/30096097/166683797-026e7325-3db3-4ff0-8740-227c4038047f.png)
-
 
 ![Technology Stack](https://user-images.githubusercontent.com/30096097/166684281-6e805d7c-9191-4b2c-8d69-3d8db56d2791.jpeg)
 
