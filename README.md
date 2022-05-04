@@ -25,7 +25,7 @@ Our project employs various technologies, including low-level firmware, custom P
 - [Crypto App](https://github.com/sfagin89/Arigato_Crypto_Roboto/tree/main/crypto_app)
 
 # Implementation Video
-- INSERT YOUTUBE LINK HERE!
+- [EC544 - Arigato Crypto Roboto](https://www.youtube.com/watch?v=zG-Wq4VXOKg)
 
 # Final Report
 - PUT LINK TO PDF/REPORT FOLDER
