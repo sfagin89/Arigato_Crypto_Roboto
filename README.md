@@ -11,7 +11,7 @@ This project deploys a Raspberry Pi robotic car, whose movements are controlled 
 
 Our project employs various technologies, including low-level firmware, custom PCB design, IoT communication, APIs, and crypto-currency. Ian Chadwick connected the robot with MQTT, Sara Fagin created the custom PCB for the e-ink display, and Santiago Gomez developed the e-ink firmware for the FRDM-K64F board. He is also responsible for the client application that links the robot’s crypto-wallet with its MQTT Message Broker. This report delves into the implementation of each component. Furthermore, each component discussion provides insight into the development of the respective engineer.
 
-# Hardware
+## Hardware
 - [NXP FRDM-K64F Development Board](https://www.nxp.com/design/development-boards/freedom-development-boards/mcu-boards/freedom-development-platform-for-kinetis-k64-k63-and-k24-mcus:FRDM-K64F)
 - [Waveshare’s 2.9 inch V2 e-ink display](https://www.waveshare.com/wiki/4.2inch_e-Paper_Module)
 - [Adafruit Stepper + DC Motor FeatherWing motor control board](https://learn.adafruit.com/adafruit-stepper-dc-motor-featherwing)
@@ -20,28 +20,32 @@ Our project employs various technologies, including low-level firmware, custom P
 - [Custom PCB for e-Ink](https://github.com/sfagin89/Arigato_Crypto_Roboto/tree/main/PCB_files)
   - [Documentation of Full PCB Assembly](https://github.com/sfagin89/Arigato_Crypto_Roboto/tree/main/PCB_files/PCB%20Assembly)
 
-# Software
+## Software
 - [Custom e-Ink Firmware](https://github.com/sfagin89/Arigato_Crypto_Roboto/tree/main/eink_firmware/development/eink_spi_firmware)
 - [Robot Software](https://github.com/sfagin89/Arigato_Crypto_Roboto/tree/main/RPi)
 - [Crypto App](https://github.com/sfagin89/Arigato_Crypto_Roboto/tree/main/crypto_app)
 
-# Implementation Video
+## Implementation Video
 - [EC544 - Arigato Crypto Roboto](https://www.youtube.com/watch?v=zG-Wq4VXOKg)
 
-# Final Report
+## Final Report
 - PUT LINK TO PDF/REPORT FOLDER
 
-# Custom PCB Schematic and Board Layout
-- Final PCB Schematic
+## Custom PCB Schematic and Board Layout
+
+### Final PCB Schematic
 ![Custom PCB Schematic](https://github.com/sfagin89/Arigato_Crypto_Roboto/blob/e5e9a5214d5f0a81ab09beffe147bd4ab1f389d4/PCB_files/ECE544_v3_schem.png)
-- Final PCB Board Layout
+
+### Final PCB Board Layout
 ![Custom PCB Board Layout](https://github.com/sfagin89/Arigato_Crypto_Roboto/blob/e5e9a5214d5f0a81ab09beffe147bd4ab1f389d4/PCB_files/ECE544_v3_board.png)
-- PCB Board Top Layer
+
+### PCB Board Top Layer
 ![Custom PCB Board Layout - Top Layer](https://github.com/sfagin89/Arigato_Crypto_Roboto/blob/main/PCB_files/ECE544_v3_board_top.png)
-- PCB Board Bottom Layer
+
+### PCB Board Bottom Layer
 ![Custom PCB Board Layout - Bottom Layer](https://github.com/sfagin89/Arigato_Crypto_Roboto/blob/e5e9a5214d5f0a81ab09beffe147bd4ab1f389d4/PCB_files/ECE544_v3_board_btm.png)
 
-# Functional Block Diagrams
+## Functional Block Diagrams
 
 
 ![Technology Stack](https://user-images.githubusercontent.com/30096097/166684281-6e805d7c-9191-4b2c-8d69-3d8db56d2791.jpeg)
