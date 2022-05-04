@@ -1,4 +1,12 @@
 # Arigato the Crypto Roboto
+
+EC544 Networking the Physical World
+
+Spring 2022 Final Project
+
+
+
+
 This project deploys a Raspberry Pi robotic car, whose movements are controlled by payments to a crypto-wallet. The robot is subscribed to a movement command topic on an AWS MQTT server. Messages are published to that topic when the robot’s crypto-wallet receives currency, Dogecoin in this case. A user scans a QR code that appears on an e-ink display sitting on top of the robot. The display is controlled by a FRDM-64F board and it interfaces with the board via a custom PCB. 
 
 Our project employs various technologies, including low-level firmware, custom PCB design, IoT communication, APIs, and crypto-currency. Ian Chadwick connected the robot with MQTT, Sara Fagin created the custom PCB for the e-ink display, and Santiago Gomez developed the e-ink firmware for the FRDM-K64F board. He is also responsible for the client application that links the robot’s crypto-wallet with its MQTT Message Broker. This report delves into the implementation of each component. Furthermore, each component discussion provides insight into the development of the respective engineer.
