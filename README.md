@@ -29,7 +29,7 @@ Our project employs various technologies, including low-level firmware, custom P
 - [EC544 - Arigato Crypto Roboto](https://www.youtube.com/watch?v=zG-Wq4VXOKg)
 
 ## Final Report
-- PUT LINK TO PDF/REPORT FOLDER
+- [Final Report](https://github.com/sfagin89/Arigato_Crypto_Roboto/blob/main/Final%20Project%20Report.pdf)
 
 ## Custom PCB Schematic and Board Layout
 
