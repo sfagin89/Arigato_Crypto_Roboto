@@ -35,6 +35,9 @@ Our project employs various technologies, including low-level firmware, custom P
 ![Technology Stack](https://user-images.githubusercontent.com/30096097/166683797-026e7325-3db3-4ff0-8740-227c4038047f.png)
 
 
+![Technology Stack](https://user-images.githubusercontent.com/30096097/166684281-6e805d7c-9191-4b2c-8d69-3d8db56d2791.jpeg)
+
+
 ![Firmware Architecture - E-INK Firmware](https://user-images.githubusercontent.com/30096097/166616635-c3e24d55-607d-4b58-ab62-506a47517805.png)
 
 
